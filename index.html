@@ -1462,19 +1462,17 @@
     const payload = {
       submittedAt: Date.now().toString(),
       fields: [
-        { objectTypeId: '0-1', name: 'firstname',    value: firstName },
-        { objectTypeId: '0-1', name: 'lastname',     value: lastName },
-        { objectTypeId: '0-1', name: 'email',        value: email },
-        { objectTypeId: '0-1', name: 'phone',        value: phone },
-        { objectTypeId: '0-1', name: 'city',         value: document.getElementById('f-address').value || '' },
-        { objectTypeId: '0-1', name: 'message',      value:
-            'Model: '        + (document.getElementById('f-model').value   || 'N/A') + '\n' +
-            'Variant: '      + (document.getElementById('f-variant').value || 'N/A') + '\n' +
-            'Fuel: '         + (fuel ? fuel.value : 'Not specified')                 + '\n' +
-            'Colour: '       + (document.getElementById('f-colour').value  || 'N/A') + '\n' +
-            'Requirements: ' + (document.getElementById('f-req').value     || 'N/A')
-        },
-      ],
+        { name: 'firstname',                value: firstName },
+        { name: 'lastname',                 value: lastName  },
+        { name: 'email',                    value: email     },
+        { name: 'phone',                    value: phone     },
+        { name: 'city',                     value: document.getElementById('f-address').value  || '' },
+        { name: 'preferred_vehicle_brand',  value: document.getElementById('f-model').value    || '' },
+        { name: 'vehicle_make_and_model',   value: document.getElementById('f-variant').value  || '' },
+        { name: 'fuel_type',                value: fuel ? fuel.value : '' },
+        { name: 'colour_preference',        value: document.getElementById('f-colour').value   || '' },
+        { name: 'specific_requirements',    value: document.getElementById('f-req').value      || '' },
+      ].filter(f => f.value !== ''),
       context: {
         pageUri:  window.location.href,
         pageName: 'Alfa Automotives — Find Your Perfect Car'
