@@ -970,8 +970,30 @@
     font-size: 10px !important; color: var(--text-dim) !important;
   }
 
+
+  /* ── FORM SUCCESS STATE ── */
+  .alfa-form { width: 100%; }
+  .form-success {
+    padding: 60px 40px; text-align: center;
+    border: 1px solid rgba(200,200,200,0.1);
+  }
+  .form-success-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 1px solid var(--chrome);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 22px; color: var(--chrome);
+  }
+  .form-success h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 300; color: var(--white);
+    margin-bottom: 12px;
+  }
+  .form-success p {
+    font-size: 13px; color: var(--text-dim); line-height: 1.8;
+  }
+
 </style>
-<script src="https://js-na2.hsforms.net/forms/embed/246706815.js" defer></script>
 </head>
 <body>
 
@@ -1286,18 +1308,78 @@
 
       <!-- Form — HubSpot Embed -->
       <div class="reveal reveal-delay-2">
-        <div class="hubspot-form-wrapper" id="hubspot-form-wrapper">
-          <!-- ═══════════════════════════════════════════════════
-               HUBSPOT FORM EMBED
-               Replace the three values below with your own:
-               1. portalId   — your HubSpot Portal ID
-               2. formId     — your HubSpot Form ID
-               Find these in HubSpot → Marketing → Forms →
-               [your form] → Share → Embed Code
-          ════════════════════════════════════════════════════ -->
-          <div class="hs-form-frame" data-region="na2" data-form-id="7b9985ac-4e5d-443b-8f5a-a66a3b34f4cb" data-portal-id="246706815"></div>
+        <form class="alfa-form" id="alfaForm" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-name">Full Name</label>
+              <input type="text" id="f-name" name="name" placeholder="Your name" autocomplete="name" required>
+            </div>
+            <div class="form-group">
+              <label for="f-email">Email Address</label>
+              <input type="email" id="f-email" name="email" placeholder="your@email.com" autocomplete="email" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-phone">Phone Number</label>
+              <input type="tel" id="f-phone" name="phone" placeholder="+91 00000 00000" autocomplete="tel" required>
+            </div>
+            <div class="form-group">
+              <label for="f-address">Address / City</label>
+              <input type="text" id="f-address" name="address" placeholder="City, State" autocomplete="address-level2">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-model">Car Model</label>
+              <input type="text" id="f-model" name="model" placeholder="e.g. BMW 3 Series">
+            </div>
+            <div class="form-group">
+              <label for="f-variant">Variant</label>
+              <input type="text" id="f-variant" name="variant" placeholder="e.g. 320d Sport Line">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Fuel Preference</label>
+            <div class="fuel-options">
+              <input type="radio" name="fuel" id="f-petrol" class="fuel-option" value="Petrol">
+              <label for="f-petrol" class="fuel-label">Petrol</label>
+              <input type="radio" name="fuel" id="f-diesel" class="fuel-option" value="Diesel">
+              <label for="f-diesel" class="fuel-label">Diesel</label>
+              <input type="radio" name="fuel" id="f-electric" class="fuel-option" value="Electric">
+              <label for="f-electric" class="fuel-label">Electric</label>
+              <input type="radio" name="fuel" id="f-hybrid" class="fuel-option" value="Hybrid">
+              <label for="f-hybrid" class="fuel-label">Hybrid</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="f-colour">Colour Preference</label>
+            <input type="text" id="f-colour" name="colour" placeholder="e.g. Mineral White, Obsidian Black">
+          </div>
+
+          <div class="form-group">
+            <label for="f-req">Specific Requirements</label>
+            <textarea id="f-req" name="requirements" placeholder="Tell us about any additional features, accessories, or preferences you'd like..."></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <span id="submitText">Submit Enquiry</span>
+          </button>
+          <p class="form-note">We'll reach out within 24 hours with personalised options.</p>
+        </form>
+
+        <!-- Success message -->
+        <div class="form-success" id="formSuccess" style="display:none;">
+          <div class="form-success-inner">
+            <div class="form-success-icon">✓</div>
+            <h3>Enquiry Received</h3>
+            <p>Thank you! We'll reach out within 24 hours with personalised options for you.</p>
+          </div>
         </div>
-        <p class="form-note" style="margin-top:16px;">We'll reach out within 24 hours with personalised options.</p>
       </div>
     </div>
   </div>
@@ -1347,26 +1429,81 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
   reveals.forEach(el => observer.observe(el));
 
-  // Form submit
-  function handleSubmit() {
-    const name = document.getElementById('f-name').value.trim();
+  // Form submit — posts silently to HubSpot CRM (no branding, no iframe)
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const btn  = document.getElementById('submitBtn');
+    const text = document.getElementById('submitText');
+
+    const name  = document.getElementById('f-name').value.trim();
     const email = document.getElementById('f-email').value.trim();
     const phone = document.getElementById('f-phone').value.trim();
+
     if (!name || !email || !phone) {
       alert('Please fill in your name, email, and phone number.');
       return;
     }
-    const btn = document.getElementById('submitBtn');
-    btn.textContent = 'Enquiry Sent ✓';
-    btn.style.background = 'linear-gradient(135deg, #444 0%, #888 100%)';
-    btn.style.color = '#fff';
+
+    text.textContent = 'Sending…';
     btn.disabled = true;
-    setTimeout(() => {
-      btn.textContent = 'Submit Enquiry';
-      btn.style.background = '';
-      btn.style.color = '';
+
+    // Split name into first/last for HubSpot
+    const nameParts = name.split(' ');
+    const firstName = nameParts[0];
+    const lastName  = nameParts.slice(1).join(' ') || '-';
+
+    const fuel = document.querySelector('input[name="fuel"]:checked');
+
+    // HubSpot Forms API — submits directly into your CRM
+    const PORTAL_ID = '246706815';
+    const FORM_ID   = '7b9985ac-4e5d-443b-8f5a-a66a3b34f4cb';
+    const HS_URL    = `https://api.hsforms.com/submissions/v3/integration/submit/${PORTAL_ID}/${FORM_ID}`;
+
+    const payload = {
+      submittedAt: Date.now().toString(),
+      fields: [
+        { objectTypeId: '0-1', name: 'firstname',    value: firstName },
+        { objectTypeId: '0-1', name: 'lastname',     value: lastName },
+        { objectTypeId: '0-1', name: 'email',        value: email },
+        { objectTypeId: '0-1', name: 'phone',        value: phone },
+        { objectTypeId: '0-1', name: 'city',         value: document.getElementById('f-address').value || '' },
+        { objectTypeId: '0-1', name: 'message',      value:
+            'Model: '        + (document.getElementById('f-model').value   || 'N/A') + '\n' +
+            'Variant: '      + (document.getElementById('f-variant').value || 'N/A') + '\n' +
+            'Fuel: '         + (fuel ? fuel.value : 'Not specified')                 + '\n' +
+            'Colour: '       + (document.getElementById('f-colour').value  || 'N/A') + '\n' +
+            'Requirements: ' + (document.getElementById('f-req').value     || 'N/A')
+        },
+      ],
+      context: {
+        pageUri:  window.location.href,
+        pageName: 'Alfa Automotives — Find Your Perfect Car'
+      }
+    };
+
+    try {
+      const res = await fetch(HS_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById('alfaForm').style.display    = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+      } else {
+        const err = await res.json();
+        console.error('HubSpot error:', err);
+        text.textContent = 'Submit Enquiry';
+        btn.disabled = false;
+        alert('Something went wrong. Please try again or reach us on Instagram @alfa_automotives');
+      }
+    } catch(err) {
+      console.error('Network error:', err);
+      text.textContent = 'Submit Enquiry';
       btn.disabled = false;
-    }, 4000);
+      alert('Network error. Please check your connection and try again.');
+    }
   }
 </script>
 
